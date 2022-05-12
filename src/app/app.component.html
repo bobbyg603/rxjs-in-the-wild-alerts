@@ -1,6 +1,4 @@
-<div class="overlay">
-  <app-alert *ngIf="alerts$ | async as alerts" [alerts]="alerts"></app-alert>
-</div>
+<app-alert *ngIf="alerts$ | async as alerts" [alerts]="alerts"></app-alert>
 <main class="pt-2 px-4">
   <h1>Alerts</h1>
   Auto Dismiss? <ngx-toggle [(checked)]="autoDismiss"></ngx-toggle>

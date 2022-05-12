@@ -35,7 +35,7 @@ export class AlertService {
     
     if (autoDismiss) {
       firstValueFrom(
-        timer(6000)
+        timer(5000)
       ).then(() => this.removeAlert(alert.id));
     }
 
