@@ -9,8 +9,8 @@ export enum AlertColor {
 export class Alert {
   readonly id = uuid();
   constructor(
-    public readonly message: string,
-    public readonly color: AlertColor,
-    public readonly autoDismiss: boolean = true
+    readonly message: string,
+    readonly color: AlertColor,
+    readonly autoDismiss: boolean = true
   ) { }
 }
