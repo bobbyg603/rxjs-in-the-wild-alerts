@@ -11,8 +11,7 @@ import { AlertService } from './alert.service';
 export class AlertComponent {
 
   @Input() alerts: Alert[] = [];
-  @Output() removeAlertRequested: EventEmitter<string> = new EventEmitter<string>();
-
+  
   constructor(private _alertService: AlertService) { }
 
   onRemoveAlertClick(id: string): void {
