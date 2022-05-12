@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockPipe } from 'ng-mocks';
+import { of } from 'rxjs';
 import { Alert, AlertColor } from './alert';
 import { AlertColorClassNamePipe } from './alert-color-class-name.pipe';
 import { AlertComponent } from './alert.component';
@@ -40,7 +41,7 @@ describe('AlertComponent', () => {
   });
 
   it('should display alerts', () => {
-    component.alerts = [alert1, alert2];
+    component.alerts$ = of([alert1, alert2]);
 
     fixture.detectChanges();
 

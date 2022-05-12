@@ -1,28 +1,23 @@
 $media-breakpoint-up-lg: 992px;
 
+:host {
+    position: fixed;
+    z-index: 10000;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+}
+
 @media only screen and (max-width: $media-breakpoint-up-lg) {
     :host {
         width: 100%;
-        position: fixed;
-        z-index: 10000;
-        margin-top: 15px;
-        margin-left: auto;
-        margin-right: auto;
-        left: 0;
-        right: 0;
     }
 }
 
 @media only screen and (min-width: $media-breakpoint-up-lg) {
     :host {
         width: 500px;
-        position: fixed;
-        z-index: 10000;
-        margin-top: 15px;
-        margin-left: auto;
-        margin-right: auto;
-        left: 0;
-        right: 0;
     }
 }
 
@@ -31,6 +26,7 @@ $media-breakpoint-up-lg: 992px;
 }
 
 ul { 
+    margin-top: 15px;
     list-style-type: none;
     padding-left: 0;
 }

@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { AlertComponent } from './alert/alert.component';
 import { AppComponent } from './app.component';
 import { MockComponent } from 'ng-mocks';
+import { NgxToggleComponent } from '@bobbyg603/ngx-toggle';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -12,7 +13,8 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AppComponent,
-        MockComponent(AlertComponent)
+        MockComponent(AlertComponent),
+        MockComponent(NgxToggleComponent)
       ],
     }).compileComponents();
 

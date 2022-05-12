@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Alert } from "./alert";
 import { AlertService } from './alert.service';
 
@@ -9,10 +10,11 @@ import { AlertService } from './alert.service';
   styleUrls: ['./alert.component.scss']
 })
 export class AlertComponent {
-
-  @Input() alerts: Alert[] = [];
+  alerts$: Observable<Alert[]>;
   
-  constructor(private _alertService: AlertService) { }
+  constructor(private _alertService: AlertService) {
+    this.alerts$ = this._alertService.alerts$;
+  }
 
   onRemoveAlertClick(id: string): void {
     this._alertService.dismissAlert(id);
