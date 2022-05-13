@@ -1,3 +1,4 @@
+// @ts-ignore StackBlitz uuid types error
 import { v4 as uuid } from 'uuid';
 
 export enum AlertColor {
