@@ -40,25 +40,4 @@ describe('AlertService', () => {
       )
     });
   });
-
-  describe('pushErrorAlert', () => {
-    it('should push an alert with message, AlertColor.Red, and autoDismiss false', async () => {
-      const message = 'ruh roh!';
-      const resultPromise = firstValueFrom(service.alerts$);
-
-      service.pushErrorAlert(new Error(message));
-      const result = await resultPromise;
-
-      expect(result).toEqual(
-        jasmine.arrayContaining([
-          jasmine.objectContaining({
-            id: jasmine.any(String),
-            message,
-            color: AlertColor.Red,
-            autoDismiss: true
-          })
-        ])
-      );
-    });
-  });
 });

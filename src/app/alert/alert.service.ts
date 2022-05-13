@@ -24,12 +24,6 @@ export class AlertService {
     this.removeAlert(id);
   }
 
-  pushErrorAlert(error: Error | HttpErrorResponse) {
-    const autoDismiss = (<HttpErrorResponse>error)?.status !== 408;
-    const message = error.message || 'Unknown error';
-    this.pushAlert(message, AlertColor.Red, autoDismiss);
-  }
-
   pushAlert(message: string, color: AlertColor = AlertColor.Red, autoDismiss: boolean = true): void {
     const alert = new Alert(message, color, autoDismiss);
     
