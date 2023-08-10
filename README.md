@@ -22,11 +22,167 @@ Install the dependencies and start the application:
 cd rxjs-in-the-wild-alerts && npm i && npm start
 ```
 
-TODO BG
+Point your browser to https://localhost:4200 and click on the buttons to reveal errors of various colors. You can also toggle off the Auto Dismiss button to keep the alerts around until you interact with them.
+
+![rxjs-in-the-wild](https://github.com/bobbyg603/rxjs-in-the-wild-alerts/assets/2646053/c4d9e7ca-eabf-4347-9320-f69523a54f41)
 
 ## 🕵️ Inspecting the Code
 
-TODO BG
+In [alert.service.ts](https://github.com/bobbyg603/rxjs-in-the-wild-alerts/blob/main/src/app/alert/alert.service.ts) we created a stateful service that contains an observable array of `alerts$` to be displayed by the Alert Component. We need ways to push alerts, dismiss alerts, and dismiss alerts after a timeout if the alert should be dismissed automatically.
+
+```ts
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { firstValueFrom, Observable, Subject, timer } from 'rxjs';
+import { Alert, AlertColor } from './alert';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AlertService {
+
+  private _state: Alert[] = [];
+  private _alertSubject = new Subject<Alert[]>();
+  private _alerts$?: Observable<Alert[]>;
+
+  get alerts$(): Observable<Alert[]> {
+    if (!this._alerts$) {
+      this._alerts$ = this._alertSubject.asObservable();
+    }
+
+    return this._alerts$;
+  }
+
+  dismissAlert(id: string): void {
+    this.removeAlert(id);
+  }
+
+  pushAlert(message: string, color: AlertColor = AlertColor.Red, autoDismiss: boolean = true): void {
+    const alert = new Alert(message, color, autoDismiss);
+    
+    if (autoDismiss) {
+      firstValueFrom(
+        timer(5000)
+      ).then(() => this.removeAlert(alert.id));
+    }
+
+    this.addAlert(alert);
+  }
+
+  private addAlert(alert: Alert): void {
+    this._state = this._state.concat(alert);
+    this._alertSubject.next(this._state);
+  }
+
+  private removeAlert(id: string): void {
+    this._state = this._state.filter(alert => alert.id !== id);
+    this._alertSubject.next(this._state)
+  }
+}
+```
+
+In [alert.component.ts](https://github.com/bobbyg603/rxjs-in-the-wild-alerts/blob/main/src/app/alert/alert.component.ts) we expose the `alerts$` observable and expose a mechanism to dismiss alerts when they are clicked.
+
+```ts
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Alert } from "./alert";
+import { AlertService } from './alert.service';
+
+@Component({
+  selector: 'app-alert',
+  templateUrl: './alert.component.html',
+  styleUrls: ['./alert.component.scss']
+})
+export class AlertComponent {
+  alerts$: Observable<Alert[]>;
+  
+  constructor(private _alertService: AlertService) {
+    this.alerts$ = this._alertService.alerts$;
+  }
+
+  onRemoveAlertClick(id: string): void {
+    this._alertService.dismissAlert(id);
+  }
+}
+```
+
+The [alert.component.html](https://github.com/bobbyg603/rxjs-in-the-wild-alerts/blob/main/src/app/alert/alert.component.html) template uses [`*ngFor`](https://angular.io/tutorial/first-app/first-app-lesson-08) and the [`async` pipe](https://angular.io/api/common/AsyncPipe) to display the observable `alerts$` collection. A class is added to the alert div by transforming the alert via the `alertColorClassName` pipe and using the resulting value as an input to the div's `ngClass` property.
+
+```html
+<ng-container *ngIf="alerts$ | async as alerts">
+  <ul *ngIf="alerts?.length">
+    <li *ngFor="let alert of alerts">
+      <div class="d-flex justify-content-between rounded cursor-pointer p-3 mt-2 w-100"
+        [ngClass]="alert | alertColorClassName" (click)="onRemoveAlertClick(alert.id)">
+        <div></div>
+        <div>
+          {{alert.message}}
+        </div>
+        <div>
+          <button type="button" class="btn-close float-right" aria-label="Close"></button>
+        </div>
+      </div>
+    </li>
+  </ul>
+</ng-container>
+```
+
+In [alert-color-class-name.pipe.ts](https://github.com/bobbyg603/rxjs-in-the-wild-alerts/blob/main/src/app/alert/alert-color-class-name.pipe.ts) we add a transform that converts the `AlertColor` enum to a [Bootstrap color](https://getbootstrap.com/docs/5.0/customize/color/) class.
+
+```ts
+import { Pipe, PipeTransform } from '@angular/core';
+import { Alert, AlertColor } from './alert';
+
+@Pipe({
+  name: 'alertColorClassName'
+})
+export class AlertColorClassNamePipe implements PipeTransform {
+
+  transform(alert: Alert): string {
+    if (alert?.color === AlertColor.Green) {
+      return 'alert-success';
+    }
+
+    if (alert?.color === AlertColor.Yellow) {
+      return 'alert-warning';
+    }
+
+    return 'alert-danger';
+  }
+}
+```
+
+Finally, in [app.component.ts](https://github.com/bobbyg603/rxjs-in-the-wild-alerts/blob/main/src/app/app.component.ts) we add some methods that we can use to display alerts.
+
+```ts
+import { Component } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { AlertColor } from './alert/alert';
+import { AlertService } from './alert/alert.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  autoDismiss = true;
+
+  readonly AlertColor = AlertColor;
+
+  constructor(
+    private _alertService: AlertService,
+    title: Title
+  ) {
+    title.setTitle('RxJS in the Wild | Alerts');
+  }
+
+  onShowAlertClick(message: string, color: AlertColor): void {
+    this._alertService.pushAlert(message, color, this.autoDismiss);
+  }
+}
+```
 
 ## 🧑‍💻 Next Steps
 
